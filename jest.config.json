@@ -3,6 +3,6 @@
   "testEnvironment": "jsdom",
   "roots": ["<rootDir>/tests"],
   "collectCoverage": true,
-  "coverageReporters": ["text", "json-summary"],
+  "coverageReporters": ["text", "json-summary", "lcov"],
   "coverageProvider": "v8"
 }
