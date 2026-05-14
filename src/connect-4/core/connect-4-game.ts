@@ -1,19 +1,33 @@
 
-export interface Connect4Game {
+export abstract class Connect4Game {
+
+    // Width of every Connect4 board.
+    public static readonly BOARD_WIDTH: number = 7;
+    // Height of every Connect4 board.
+    public static readonly BOARD_HEIGHT: number = 6;
+    // Number of slots of every Connect4 board.
+    public static readonly BOARD_SIZE: number = Connect4Game.BOARD_WIDTH * Connect4Game.BOARD_HEIGHT;
+    // Board directions to check for connect 4;
+    protected static readonly DIRECTIONS: ReadonlyArray<readonly [number, number]> = [[1, 0], [0, 1], [1, 1], [1, -1]];
+
+    // Number of moves played.
+    protected turnCount: number = 0;
+    // State of whose turn is next.
+    protected redsTurn: boolean = true;
 
     /**
      * Retrieves the current turn count of the Connect4 game.
      *
      * @returns The number of moves played.
      */
-    getTurnCount(): number;
+    abstract getTurnCount(): number;
 
     /**
      * Checks if red plays the next turn in the current Connect4 game.
      *
      * @returns True if it is red's turn.
      */
-    isRedsTurn(): boolean;
+    abstract isRedsTurn(): boolean;
 
     /**
      * Checks if a piece occupies a position in the game.
@@ -22,7 +36,7 @@ export interface Connect4Game {
      * @param column Index of the column to check for occupancy.
      * @returns True if a piece occupies the given position.
      */
-    isOccupied(row: number, column: number): boolean;
+    abstract isOccupied(row: number, column: number): boolean;
 
     /**
      * Checks if a red piece occupies a position in the game.
@@ -31,7 +45,7 @@ export interface Connect4Game {
      * @param column Index of the column to check for red's occupancy.
      * @returns True if a red piece occupies the given position.
      */
-    isOccupiedByRed(row: number, column: number): boolean;
+    abstract isOccupiedByRed(row: number, column: number): boolean;
 
     /**
      * Checks the legality of playing a piece at a given column.
@@ -39,7 +53,7 @@ export interface Connect4Game {
      * @param column Index of the column to check the legality of a move.
      * @returns True if the move will not overflow the column.
      */
-    isLegalMove(column: number): boolean;
+    abstract isLegalMove(column: number): boolean;
 
     /**
      * Plays a piece in the given column as the player whose turn it is.
@@ -49,7 +63,7 @@ export interface Connect4Game {
      *
      * @throws Error Throws if the move overflows the column.
      */
-    playMove(column: number): boolean;
+    abstract playMove(column: number): boolean;
 
     /**
      * Reverts the last move played in the given column.
@@ -58,20 +72,20 @@ export interface Connect4Game {
      *
      * @throws Error Throws if the column is already empty.
      */
-    undoMove(column: number): void;
+    abstract undoMove(column: number): void;
 
     /**
      * Fills a nn input buffer with the current board state.
      *
      * @param target Buffer to fill with the current board state.
      */
-    fillNeuralInput(target: Float32Array): void;
+    abstract fillNeuralInput(target: Float32Array): void;
 
     /**
      * Converts the board to its string representation.
      *
      * @returns String representation of the current board state.
      */
-    toString(): string;
+    abstract toString(): string;
 }
 

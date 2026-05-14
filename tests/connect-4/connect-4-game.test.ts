@@ -1,5 +1,5 @@
-import {Connect4Game} from "../../src/connect-4/connect-4-game";
-import {ArrayConnect4Game} from "../../src/connect-4/arr-connect-4-game";
+import {Connect4Game} from "../../src/connect-4/core/connect-4-game";
+import {ArrayConnect4Game} from "../../src/connect-4/core/arr-connect-4-game";
 
 
 function testConnect4Contract(name: string, constructor: () => Connect4Game) {

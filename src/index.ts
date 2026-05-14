@@ -1,5 +1,5 @@
-console.log('Happy developing ✨')
+import {Connect4Renderer} from "./connect-4/connect4-renderer";
 
-export function add(a: number, b: number): number {
-    return a + b;
-}
+const canvas = document.getElementById("mainCanvas")! as HTMLCanvasElement;
+const renderer = new Connect4Renderer(canvas);
+renderer.render();
