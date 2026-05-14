@@ -4,34 +4,21 @@ import {Connect4Game} from "./connect-4-game";
  * ## Array Connect4 Game
  * Represents an instance of the Connect4 game implemented using a flat array.
  */
-export class ArrayConnect4Game implements Connect4Game {
-
-    // Width of every Connect4 board.
-    public static readonly BOARD_WIDTH: number = 7;
-    // Height of every Connect4 board.
-    public static readonly BOARD_HEIGHT: number = 6;
-    // Number of slots of every Connect4 board.
-    public static readonly BOARD_SIZE: number = ArrayConnect4Game.BOARD_WIDTH * ArrayConnect4Game.BOARD_HEIGHT;
-    // Board directions to check for connect 4;
-    private static readonly DIRECTIONS: ReadonlyArray<readonly [number, number]> = [[1, 0], [0, 1], [1, 1], [1, -1]];
+export class ArrayConnect4Game extends Connect4Game {
 
     // Array representing the current Connect4 board state.
     private readonly board: Uint8Array;
     // Array indicating the current height of all columns.
     private readonly columnHeights: number[];
 
-    // Number of moves played.
-    private turnCount: number = 0;
-    // State of whose turn is next.
-    private redsTurn: boolean = true;
-
     /**
      * Creates a new Connect4 game in the starting position (empty board) starting
      * with red's turn.
      */
     public constructor() {
-        this.board = new Uint8Array(2 * ArrayConnect4Game.BOARD_SIZE);
-        this.columnHeights = new Array<number>(ArrayConnect4Game.BOARD_WIDTH).fill(0);
+        super();
+        this.board = new Uint8Array(2 * Connect4Game.BOARD_SIZE);
+        this.columnHeights = new Array<number>(Connect4Game.BOARD_WIDTH).fill(0);
     }
 
     /**
@@ -56,19 +43,19 @@ export class ArrayConnect4Game implements Connect4Game {
      */
     private isWinningMove(index: number): boolean {
         const board = this.board;
-        const localIndex = index % ArrayConnect4Game.BOARD_SIZE;
-        const row = Math.floor(localIndex / ArrayConnect4Game.BOARD_WIDTH);
-        const col = localIndex % ArrayConnect4Game.BOARD_WIDTH;
+        const localIndex = index % Connect4Game.BOARD_SIZE;
+        const row = Math.floor(localIndex / Connect4Game.BOARD_WIDTH);
+        const col = localIndex % Connect4Game.BOARD_WIDTH;
 
-        for (const [dx, dy] of ArrayConnect4Game.DIRECTIONS) {
+        for (const [dx, dy] of Connect4Game.DIRECTIONS) {
             let count = 1;
             for (const dir of [-1, 1]) {
                 let x = col + dx * dir;
                 let y = row + dy * dir;
 
-                while (x >= 0 && x < ArrayConnect4Game.BOARD_WIDTH && y >= 0 && y < ArrayConnect4Game.BOARD_HEIGHT) {
-                    const i = x + y * ArrayConnect4Game.BOARD_WIDTH + (index >= ArrayConnect4Game.BOARD_SIZE
-                        ? ArrayConnect4Game.BOARD_SIZE : 0);
+                while (x >= 0 && x < Connect4Game.BOARD_WIDTH && y >= 0 && y < Connect4Game.BOARD_HEIGHT) {
+                    const i = x + y * Connect4Game.BOARD_WIDTH + (index >= Connect4Game.BOARD_SIZE
+                        ? Connect4Game.BOARD_SIZE : 0);
                     if (!board[i]) break;
 
                     count++;
@@ -91,29 +78,29 @@ export class ArrayConnect4Game implements Connect4Game {
     }
 
     public isOccupied(row: number, column: number): boolean {
-        if (row < 0 || row >= ArrayConnect4Game.BOARD_HEIGHT || column < 0 || column >= ArrayConnect4Game.BOARD_WIDTH)
+        if (row < 0 || row >= Connect4Game.BOARD_HEIGHT || column < 0 || column >= Connect4Game.BOARD_WIDTH)
             throw new Error(`Position not on the board: (${row}, ${column})`);
-        const index = column + row * ArrayConnect4Game.BOARD_WIDTH;
+        const index = column + row * Connect4Game.BOARD_WIDTH;
         return (this.board[index] + this.board[index + 42]) > 0;
     }
 
     public isOccupiedByRed(row: number, column: number): boolean {
-        if (row < 0 || row >= ArrayConnect4Game.BOARD_HEIGHT || column < 0 || column >= ArrayConnect4Game.BOARD_WIDTH)
+        if (row < 0 || row >= Connect4Game.BOARD_HEIGHT || column < 0 || column >= Connect4Game.BOARD_WIDTH)
             throw new Error(`Position not on the board: (${row}, ${column})`);
-        return this.board[column + row * ArrayConnect4Game.BOARD_WIDTH + 42] > 0;
+        return this.board[column + row * Connect4Game.BOARD_WIDTH + 42] > 0;
     }
 
     public isLegalMove(column: number): boolean {
-        return column >= 0 && column < ArrayConnect4Game.BOARD_WIDTH
-            && this.columnHeights[column] < ArrayConnect4Game.BOARD_HEIGHT;
+        return column >= 0 && column < Connect4Game.BOARD_WIDTH
+            && this.columnHeights[column] < Connect4Game.BOARD_HEIGHT;
     }
 
     public playMove(column: number): boolean {
         if (!this.isLegalMove(column))
             throw new Error(`Move exceeds board height for column ${column}:\n${this.toString()}`);
 
-        const index = column + this.columnHeights[column] * ArrayConnect4Game.BOARD_WIDTH
-            + (this.redsTurn ? ArrayConnect4Game.BOARD_SIZE : 0);
+        const index = column + this.columnHeights[column] * Connect4Game.BOARD_WIDTH
+            + (this.redsTurn ? Connect4Game.BOARD_SIZE : 0);
         this.board[index] = 1;
 
         this.columnHeights[column]++;
@@ -124,26 +111,26 @@ export class ArrayConnect4Game implements Connect4Game {
     }
 
     public undoMove(column: number): void {
-        if (column < 0 || column >= ArrayConnect4Game.BOARD_WIDTH || this.columnHeights[column] <= 0)
+        if (column < 0 || column >= Connect4Game.BOARD_WIDTH || this.columnHeights[column] <= 0)
             throw new Error(`Cannot remove piece from column ${column}:\n${this.toString()}`);
 
         this.redsTurn = !this.redsTurn;
         this.columnHeights[column]--;
         this.turnCount--;
 
-        const index = column + this.columnHeights[column] * ArrayConnect4Game.BOARD_WIDTH
-            + (this.redsTurn ? ArrayConnect4Game.BOARD_SIZE : 0);
+        const index = column + this.columnHeights[column] * Connect4Game.BOARD_WIDTH
+            + (this.redsTurn ? Connect4Game.BOARD_SIZE : 0);
         this.board[index] = 0;
     }
 
 
     public fillNeuralInput(target: Float32Array): void {
         const board = this.board;
-        const currentOffset = this.redsTurn ? ArrayConnect4Game.BOARD_SIZE : 0;
-        const opponentOffset = this.redsTurn ? 0 : ArrayConnect4Game.BOARD_SIZE;
-        for (let i = 0; i < ArrayConnect4Game.BOARD_SIZE; i++) {
+        const currentOffset = this.redsTurn ? Connect4Game.BOARD_SIZE : 0;
+        const opponentOffset = this.redsTurn ? 0 : Connect4Game.BOARD_SIZE;
+        for (let i = 0; i < Connect4Game.BOARD_SIZE; i++) {
             target[i] = board[currentOffset + i];
-            target[ArrayConnect4Game.BOARD_SIZE + i] = board[opponentOffset + i];
+            target[Connect4Game.BOARD_SIZE + i] = board[opponentOffset + i];
         }
     }
 
