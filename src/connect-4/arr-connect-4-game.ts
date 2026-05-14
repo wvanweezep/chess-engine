@@ -90,8 +90,22 @@ export class ArrayConnect4Game implements Connect4Game {
         return this.redsTurn;
     }
 
+    public isOccupied(row: number, column: number): boolean {
+        if (row < 0 || row >= ArrayConnect4Game.BOARD_HEIGHT || column < 0 || column >= ArrayConnect4Game.BOARD_WIDTH)
+            throw new Error(`Position not on the board: (${row}, ${column})`);
+        const index = column + row * ArrayConnect4Game.BOARD_WIDTH;
+        return (this.board[index] + this.board[index + 42]) > 0;
+    }
+
+    public isOccupiedByRed(row: number, column: number): boolean {
+        if (row < 0 || row >= ArrayConnect4Game.BOARD_HEIGHT || column < 0 || column >= ArrayConnect4Game.BOARD_WIDTH)
+            throw new Error(`Position not on the board: (${row}, ${column})`);
+        return this.board[column + row * ArrayConnect4Game.BOARD_WIDTH + 42] > 0;
+    }
+
     public isLegalMove(column: number): boolean {
-        return this.columnHeights[column] < ArrayConnect4Game.BOARD_HEIGHT;
+        return column >= 0 && column < ArrayConnect4Game.BOARD_WIDTH
+            && this.columnHeights[column] < ArrayConnect4Game.BOARD_HEIGHT;
     }
 
     public playMove(column: number): boolean {
@@ -110,7 +124,7 @@ export class ArrayConnect4Game implements Connect4Game {
     }
 
     public undoMove(column: number): void {
-        if (this.columnHeights[column] <= 0)
+        if (column < 0 || column >= ArrayConnect4Game.BOARD_WIDTH || this.columnHeights[column] <= 0)
             throw new Error(`Cannot remove piece from column ${column}:\n${this.toString()}`);
 
         this.redsTurn = !this.redsTurn;

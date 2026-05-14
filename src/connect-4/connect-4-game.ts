@@ -16,6 +16,24 @@ export interface Connect4Game {
     isRedsTurn(): boolean;
 
     /**
+     * Checks if a piece occupies a position in the game.
+     *
+     * @param row Index of the row to check for occupancy.
+     * @param column Index of the column to check for occupancy.
+     * @returns True if a piece occupies the given position.
+     */
+    isOccupied(row: number, column: number): boolean;
+
+    /**
+     * Checks if a red piece occupies a position in the game.
+     *
+     * @param row Index of the row to check for red's occupancy.
+     * @param column Index of the column to check for red's occupancy.
+     * @returns True if a red piece occupies the given position.
+     */
+    isOccupiedByRed(row: number, column: number): boolean;
+
+    /**
      * Checks the legality of playing a piece at a given column.
      *
      * @param column Index of the column to check the legality of a move.
@@ -37,6 +55,8 @@ export interface Connect4Game {
      * Reverts the last move played in the given column.
      *
      * @param column Index of the column to revert the move.
+     *
+     * @throws Error Throws if the column is already empty.
      */
     undoMove(column: number): void;
 
